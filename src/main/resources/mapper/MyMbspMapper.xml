@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.franc.mapper.MyMbspMapper">
+
+    <select id="getBarCdSeq" resultType="int">
+        /** MyMbspMapper.getBarCdSeq */
+        VALUES NEXT VALUE FOR MBSP.BAR_CD_SEQ
+    </select>
+
+    <insert id="save" parameterType="MyMbspVO">
+        /** MyMbspMapper.save */
+        INSERT INTO TB_MY_MBSP
+        VALUES (
+            #{acntId},
+            #{mbspId},
+            #{status},
+            #{totalAccumPoint},
+            #{mbspGrdCd},
+            NOW(),
+            NULL,
+            #{barCd}
+        )
+    </insert>
+
+    <select id="findById" parameterType="java.util.Map" resultType="MyMbspVO">
+        /** MyMbspMapper.findById */
+        SELECT A.*
+        FROM TB_MY_MBSP A
+        WHERE A.ACNT_ID = #{acntId}
+        AND A.MBSP_ID = #{mbspId}
+    </select>
+
+</mapper>
