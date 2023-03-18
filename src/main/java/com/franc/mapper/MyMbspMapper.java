@@ -17,6 +17,8 @@ public interface MyMbspMapper {
      */
     MyMbspVO findById(Map<String, Object> map) throws Exception;
 
+    void modify(MyMbspVO vo) throws Exception;
+
     Integer getBarCdSeq() throws Exception;
 
 }

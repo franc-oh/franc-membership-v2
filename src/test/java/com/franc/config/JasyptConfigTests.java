@@ -14,7 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = {"spring.profiles.active=test", "jasypt.encryptor.password=franc_msp"})
+@SpringBootTest(properties = {"spring.profiles.active=test", "jasypt.encryptor.password=test"})
 @ActiveProfiles("test")
 public class JasyptConfigTests {
 
@@ -24,10 +24,12 @@ public class JasyptConfigTests {
 
     @Test
     @DisplayName("jasyptConfig_설정값_테스트")
-    public void jasypt_config_test() {
+    public void jasyptConfig_test() {
         // # Given
         String value = "test";
         String encValue = jasyptEncoding(value);
+        System.out.println(jasyptEncoding("user"));
+        System.out.println(jasyptEncoding("pwd"));
 
         // # When
         String decValue = jasyptDecoding(encValue);
@@ -39,7 +41,7 @@ public class JasyptConfigTests {
 
     @Test
     @DisplayName("jasypt_유틸_테스트")
-    public void jasypt_util_test() {
+    public void jasyptUtil_test() {
         // # Given
         String value = "test";
         String encValue = JasyptUtil.encoding(value);

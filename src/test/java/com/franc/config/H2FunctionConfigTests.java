@@ -12,13 +12,13 @@ import java.util.Date;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = {"spring.profiles.active=test", "jasypt.encryptor.password=franc_msp"})
+@SpringBootTest(properties = {"spring.profiles.active=test", "jasypt.encryptor.password=test"})
 @ActiveProfiles("test")
 public class H2FunctionConfigTests {
 
     @Test
     @DisplayName("STR_TO_DATE")
-    public void str_to_date() throws Exception {
+    public void strToDate() throws Exception {
         // #1. Given
         String ymd = "20230317132030";
         String format = "%Y%m%d%H%i%s";

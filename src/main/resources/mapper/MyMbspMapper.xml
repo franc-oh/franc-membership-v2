@@ -19,10 +19,31 @@
             #{totalAccumPoint},
             #{mbspGrdCd},
             NOW(),
-            NULL,
+            #{withdrawalDate},
             #{barCd}
         )
     </insert>
+
+    <update id="modify" parameterType="MyMbspVO">
+        /** MyMbspMapper.modify */
+        UPDATE TB_MY_MBSP
+        SET
+            WITHDRAWAL_DATE = #{withdrawalDate}
+            <if test='totalAccumPoint != null'>
+                ,TOTAL_ACCUM_POINT = #{totalAccumPoint}
+            </if>
+            <if test='mbspGrdCd != null and !mbspGrdCd.equals("")'>
+                ,MBSP_GRD_CD = #{mbspGrdCd}
+            </if>
+            <if test='status != null'>
+                ,STATUS = #{status}
+            </if>
+            <if test='barCd != null and !barCd.equals("")'>
+                ,BAR_CD = #{barCd}
+            </if>
+        WHERE ACNT_ID = #{acntId}
+        AND MBSP_ID = #{mbspId}
+    </update>
 
     <select id="findById" parameterType="java.util.Map" resultType="MyMbspVO">
         /** MyMbspMapper.findById */

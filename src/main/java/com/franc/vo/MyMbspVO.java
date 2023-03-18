@@ -4,10 +4,11 @@ import com.franc.code.MbspGrd;
 import com.franc.code.Status;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 
-@Getter @Setter
+@Getter
 @ToString
 @EqualsAndHashCode(of = {"acntId", "mbspId"})
 @NoArgsConstructor
@@ -27,12 +28,25 @@ public class MyMbspVO {
     @Builder.Default
     private String mbspGrdCd = MbspGrd.COMMON.getCode();
     private LocalDateTime insertDate;
-    private LocalDateTime withdrawalDate;
+
+    @Builder.Default
+    private LocalDateTime withdrawalDate = null;
     private String barCd;
 
 
     public void setBarCd(String barCd) {
         this.barCd = barCd;
+    }
+
+    public boolean rejoin() {
+        boolean result = false;
+        if(this.acntId != null && StringUtils.hasText(this.mbspId)) {
+            this.withdrawalDate = null;
+            this.status = Status.USE.getCode();
+            result = true;
+        }
+
+        return result;
     }
 
 }
