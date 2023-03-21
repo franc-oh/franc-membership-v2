@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franc.code.Status;
 import com.franc.exception.BizException;
 import com.franc.exception.ExceptionResult;
-import com.franc.mapper.AcntMapper;
 import com.franc.mapper.MyMbspMapper;
 import com.franc.util.DateUtil;
 import com.franc.vo.MyMbspVO;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Service
@@ -61,10 +59,17 @@ public class MyMbspService {
         // #2. 해당정보로 가입된 멤버십 정보 가져오기
         MyMbspVO checkVO = myMbspMapper.findById(paramMap);
         if(checkVO != null) {
-            if(checkVO.getStatus() == Status.USE.getCode())
+            if(checkVO.getStatus() == Status.USE.getCode()) {
                 throw new BizException(ExceptionResult.ALREADY_JOIN_MY_MBSP);
-            else
+
+            } else if(checkVO.getStatus() == Status.WITHDRAWAL.getCode()) {
+                // '탈퇴'상태일 경우 탈퇴 후 1일 지나야 재가입 가능
+                if(DateUtil.compareNow(checkVO.getWithdrawalDate()) >= 0) {
+                    throw new BizException(ExceptionResult.REJOIN_NOT_YET);
+                }
+
                 withdrawal = true;
+            }
         }
 
         // #2. 등록 or 재가입
@@ -80,6 +85,45 @@ public class MyMbspService {
         }
 
         logger.info("MyMbsp join Success : " + procVO.toString());
+
+    }
+
+    /**
+     * 멤버십 탈퇴
+     * @param paramMap
+     * @throws Exception
+     */
+    public void withdrawal(Map<String, Object> paramMap) throws Exception {
+        logger.info("MyMbsp withdrawal Start : " + paramMap.toString());
+
+        // #1. 필수 값 체크
+        if(paramMap.isEmpty())
+            throw new BizException(ExceptionResult.PARAMETER_NOT_VALID);
+
+        Long acntId = (Long) paramMap.get("acntId");
+        String mbspId = (String) paramMap.get("mbspId");
+
+        if(acntId == null)
+            throw new BizException(ExceptionResult.PARAMETER_NOT_VALID);
+        if(mbspId == null)
+            throw new BizException(ExceptionResult.PARAMETER_NOT_VALID);
+
+        // #2. 멤버십 가입내역 가져오기
+        MyMbspVO procVO = myMbspMapper.findById(paramMap);
+        if(procVO == null) {
+            throw new BizException(ExceptionResult.NOT_JOIN_MBSP);
+        }
+
+        // 이미 탈퇴한 멤버십이면 에러
+        if(Status.WITHDRAWAL.getCode() == procVO.getStatus()
+                || procVO.getWithdrawalDate() != null) {
+            throw new BizException(ExceptionResult.ALREADY_WITHDRAWAL_MBSP);
+        }
+
+        if(procVO.withdrawal())
+            myMbspMapper.modify(procVO);
+
+        logger.info("MyMbsp withdrawal Success : " + procVO.toString());
 
     }
 

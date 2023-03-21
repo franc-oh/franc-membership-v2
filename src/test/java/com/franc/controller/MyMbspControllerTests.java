@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franc.code.Code;
 import com.franc.dto.MyMbspJoinDTO;
+import com.franc.dto.MyMbspWithdrawalDTO;
 import com.franc.exception.ControllerExceptionHandler;
 import com.franc.exception.ExceptionResult;
 import com.franc.service.AcntService;
@@ -25,6 +26,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -131,5 +134,107 @@ public class MyMbspControllerTests {
                 .andExpect(jsonPath("resultCode").value(Code.RESPONSE_CODE_SUCCESS))
                 .andExpect(jsonPath("resultMessage").value(Code.RESPONSE_MESSAGE_SUCCESS));
 
+    }
+
+    @Test
+    @DisplayName("멤버십탈퇴_실패_유효성검증")
+    @Transactional
+    public void test_withdrawal_fail_valid() throws Exception {
+        // #1. Given
+        MyMbspWithdrawalDTO.Request request = MyMbspWithdrawalDTO.Request.builder()
+                .acntId(ACNT_ID)
+                .build();
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(request))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("resultCode").value(ExceptionResult.PARAMETER_NOT_VALID.getCode().value()))
+                .andExpect(jsonPath("resultMessage").value(ExceptionResult.PARAMETER_NOT_VALID.getMessage()));
+    }
+
+    @Test
+    @DisplayName("멤버십탈퇴_실패_사용자검증실패")
+    @Transactional
+    public void test_withdrawal_fail_user_check() throws Exception {
+        // #1. Given
+        MyMbspWithdrawalDTO.Request request = MyMbspWithdrawalDTO.Request.builder()
+                .acntId(3L)
+                .mbspId(MBSP_ID)
+                .build();
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(request))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("resultCode").value(ExceptionResult.NOT_ACTIVE_ACNT.getCode().value()))
+                .andExpect(jsonPath("resultMessage").value(ExceptionResult.NOT_ACTIVE_ACNT.getMessage()));
+    }
+
+    @Test
+    @DisplayName("멤버십탈퇴_실패_이미탈퇴")
+    @Transactional
+    public void test_withdrawal_fail_already() throws Exception {
+        // #1. Given
+        MyMbspWithdrawalDTO.Request request = MyMbspWithdrawalDTO.Request.builder()
+                .acntId(ACNT_ID)
+                .mbspId(MBSP_ID)
+                .build();
+
+        Map<String, Object> paramMap = objectMapper.convertValue(request, Map.class);
+        myMbspService.join(paramMap);
+        myMbspService.withdrawal(paramMap);
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(request))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("resultCode").value(ExceptionResult.ALREADY_WITHDRAWAL_MBSP.getCode().value()))
+                .andExpect(jsonPath("resultMessage").value(ExceptionResult.ALREADY_WITHDRAWAL_MBSP.getMessage()));
+    }
+
+    @Test
+    @DisplayName("멤버십탈퇴_성공")
+    @Transactional
+    public void test_withdrawal_success() throws Exception {
+        // #1. Given
+        MyMbspWithdrawalDTO.Request request = MyMbspWithdrawalDTO.Request.builder()
+                .acntId(ACNT_ID)
+                .mbspId(MBSP_ID)
+                .build();
+
+        Map<String, Object> paramMap = objectMapper.convertValue(request, Map.class);
+        myMbspService.join(paramMap);
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.delete(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(request))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isAccepted())
+                .andExpect(jsonPath("resultCode").value(Code.RESPONSE_CODE_SUCCESS))
+                .andExpect(jsonPath("resultMessage").value(Code.RESPONSE_MESSAGE_SUCCESS));
     }
 }

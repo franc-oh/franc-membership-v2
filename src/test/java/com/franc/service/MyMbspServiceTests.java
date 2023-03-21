@@ -139,9 +139,37 @@ public class MyMbspServiceTests {
     }
 
     @Test
+    @DisplayName("멤버십가입_실패_탈퇴후1일안지남")
+    public void test_join_fail_rejoin_not_yet() throws Exception {
+        // #1. Given
+        Map<String, Object> paramMap = buildKeyMap();
+        Map<String, Object> voMap = buildKeyMap();
+        voMap.put("status", Status.WITHDRAWAL.getCode());
+        voMap.put("withdrawalDate", LocalDateTime.now());
+        MyMbspVO vo = buildVo(voMap);
+
+        when(acntService.findByIdAndCheckActive(anyLong()))
+                .thenReturn(AcntVO.builder().build());
+
+        when(mbspService.findByIdAndCheckActive(anyString()))
+                .thenReturn(MbspVO.builder().build());
+
+        when(myMbspMapper.findById(anyMap()))
+                .thenReturn(vo);
+
+        // #2. When
+        BizException exception
+                = assertThrows(BizException.class, () -> myMbspService.join(voMap));
+
+        // #3. Then
+        assertThat(exception.getClass()).isEqualTo(BizException.class);
+        assertThat(exception.getResult()).isEqualTo(ExceptionResult.REJOIN_NOT_YET);
+    }
+
+    @Test
     @DisplayName("멤버십가입_성공_신규 + 바코드생성")
     @Transactional
-    public void join_success_new() throws Exception {
+    public void test_join_success_new() throws Exception {
         // #1. Given
         Map<String, Object> paramMap = buildKeyMap();
 
@@ -169,12 +197,12 @@ public class MyMbspServiceTests {
     @Test
     @DisplayName("멤버십가입_성공_재가입")
     @Transactional
-    public void join_success_rejoin() throws Exception {
+    public void test_join_success_rejoin() throws Exception {
         // #1. Given
         Map<String, Object> paramMap = buildKeyMap();
         Map<String, Object> voMap = buildKeyMap();
         voMap.put("status", Status.WITHDRAWAL.getCode());
-        voMap.put("withdrawalDate", LocalDateTime.now());
+        voMap.put("withdrawalDate", LocalDateTime.now().minusDays(1L));
         MyMbspVO vo = buildVo(voMap);
 
         when(acntService.findByIdAndCheckActive(anyLong()))
@@ -196,6 +224,91 @@ public class MyMbspServiceTests {
         verify(myMbspMapper, times(1)).modify(any(MyMbspVO.class));
     }
 
+    @Test
+    @DisplayName("멤버십탈퇴_실패_유효성체크")
+    public void test_withdrawal_fail_valid() throws Exception {
+        // #1. Given
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("acntId", ACNT_ID);
+
+        // #2. When
+        BizException exception =
+                assertThrows(BizException.class, () -> myMbspService.withdrawal(paramMap));
+
+        // #3. Then
+        assertThat(exception.getClass()).isEqualTo(BizException.class);
+        assertThat(exception.getResult()).isEqualTo(ExceptionResult.PARAMETER_NOT_VALID);
+
+    }
+
+    @Test
+    @DisplayName("멤버십탈퇴_실패_멤버십없음")
+    public void test_withdrawal_fail_not_exists() throws Exception {
+        // #1. Given
+        Map<String, Object> paramMap = buildKeyMap();
+
+        when(myMbspMapper.findById(anyMap()))
+                .thenReturn(null);
+
+        // #2. When
+        BizException exception =
+            assertThrows(BizException.class, () -> myMbspService.withdrawal(paramMap));
+
+        // #3. Then
+        assertThat(exception.getClass()).isEqualTo(BizException.class);
+        assertThat(exception.getResult()).isEqualTo(ExceptionResult.NOT_JOIN_MBSP);
+
+    }
+
+    @Test
+    @DisplayName("멤버십탈퇴_실패_이미탈퇴")
+    public void test_withdrawal_fail_already() throws Exception {
+        // #1. Given
+        Map<String, Object> paramMap = buildKeyMap();
+        MyMbspVO paramVO = MyMbspVO.builder()
+                        .acntId(ACNT_ID)
+                        .mbspId(MBSP_ID)
+                        .status(Status.WITHDRAWAL.getCode())
+                        .withdrawalDate(LocalDateTime.now().minusDays(1))
+                        .build();
+
+        when(myMbspMapper.findById(anyMap()))
+                .thenReturn(paramVO);
+
+        // #2. When
+        BizException exception =
+                assertThrows(BizException.class, () -> myMbspService.withdrawal(paramMap));
+
+        // #3. Then
+        assertThat(exception.getClass()).isEqualTo(BizException.class);
+        assertThat(exception.getResult()).isEqualTo(ExceptionResult.ALREADY_WITHDRAWAL_MBSP);
+
+    }
+
+    @Test
+    @DisplayName("멤버십탈퇴_성공")
+    public void test_withdrawal_success() throws Exception {
+        // #1. Given
+        Map<String, Object> paramMap = buildKeyMap();
+        MyMbspVO paramVO = MyMbspVO.builder()
+                .acntId(ACNT_ID)
+                .mbspId(MBSP_ID)
+                .status(Status.USE.getCode())
+                .build();
+
+        when(myMbspMapper.findById(anyMap()))
+                .thenReturn(paramVO);
+
+        doNothing().when(myMbspMapper).modify(any(MyMbspVO.class));
+
+        // #2. When
+        myMbspService.withdrawal(paramMap);
+
+        // #3. Then
+        verify(myMbspMapper, times(1)).findById(anyMap());
+        verify(myMbspMapper, times(1)).modify(any(MyMbspVO.class));
+
+    }
 
 
     public Map<String, Object> buildKeyMap() throws Exception {

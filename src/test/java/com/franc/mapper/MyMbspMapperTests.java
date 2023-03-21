@@ -109,6 +109,32 @@ public class MyMbspMapperTests {
         assertThat(seq3).isEqualTo(3);
     }
 
+    @Test
+    @DisplayName("멤버십_탈퇴")
+    @Transactional
+    public void test_withdrawal() throws Exception {
+        // #1. Given
+        MyMbspVO vo = buildVo(new HashMap<>());
+        myMbspMapper.save(vo);
+
+        // #2. When
+        if(vo.withdrawal())
+            myMbspMapper.modify(vo);
+
+        Map<String, Object> resultParamMap = new HashMap<>();
+        resultParamMap.put("acntId", ACNT_ID);
+        resultParamMap.put("mbspId", MBSP_ID);
+        MyMbspVO resultVO = myMbspMapper.findById(resultParamMap);
+
+        // #3. Then
+        assertThat(resultVO).isNotNull();
+        assertThat(resultVO.getAcntId()).isEqualTo(ACNT_ID);
+        assertThat(resultVO.getMbspId()).isEqualTo(MBSP_ID);
+        assertThat(resultVO.getStatus()).isEqualTo(Status.WITHDRAWAL.getCode());
+        assertThat(resultVO.getWithdrawalDate()).isNotNull();
+
+    }
+
 
     public MyMbspVO buildVo(Map<String, Object> paramMap) throws Exception {
         Long acntId = ACNT_ID;

@@ -34,15 +34,29 @@ public class MyMbspVO {
     private String barCd;
 
 
+    /** 바코드 셋팅 */
     public void setBarCd(String barCd) {
         this.barCd = barCd;
     }
 
+    /** 재가입 */
     public boolean rejoin() {
         boolean result = false;
         if(this.acntId != null && StringUtils.hasText(this.mbspId)) {
             this.withdrawalDate = null;
             this.status = Status.USE.getCode();
+            result = true;
+        }
+
+        return result;
+    }
+
+    /** 탈퇴 */
+    public boolean withdrawal() {
+        boolean result = false;
+        if(this.acntId != null && StringUtils.hasText(this.mbspId)) {
+            this.withdrawalDate = LocalDateTime.now();
+            this.status = Status.WITHDRAWAL.getCode();
             result = true;
         }
 
