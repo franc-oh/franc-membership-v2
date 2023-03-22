@@ -1,15 +1,13 @@
 package com.franc.vo;
 
 import com.franc.code.Code;
-import com.franc.code.MbspGrd;
 import com.franc.code.Status;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 
-@Getter
+@Getter @Setter
 @ToString
 @EqualsAndHashCode(of = {"mbspId"})
 @NoArgsConstructor
@@ -18,6 +16,7 @@ import java.time.LocalDateTime;
 public class MbspVO {
 
     private String mbspId;
+
     private String mbspNm;
 
     @Builder.Default

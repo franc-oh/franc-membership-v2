@@ -12,7 +12,7 @@ public class PageUtil {
      * @return resultMap
      * @throws Exception
      */
-    public static Map<String, Integer> getPageMap(Integer pageNo, Integer pageLimit) throws Exception {
+    public static Map<String, Object> getPageMap(Integer pageNo, Integer pageLimit) throws Exception {
         int offset = 0;
         int limit = 20;
 
@@ -21,7 +21,7 @@ public class PageUtil {
             limit = pageLimit;
         }
 
-        Map<String, Integer> resultMap = new HashMap<>();
+        Map<String, Object> resultMap = new HashMap<>();
         resultMap.put("offset", offset);
         resultMap.put("limit", limit);
 

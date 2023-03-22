@@ -3,9 +3,7 @@ package com.franc.service;
 import com.franc.code.Status;
 import com.franc.exception.BizException;
 import com.franc.exception.ExceptionResult;
-import com.franc.mapper.AcntMapper;
 import com.franc.mapper.MbspMapper;
-import com.franc.vo.AcntVO;
 import com.franc.vo.MbspVO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 

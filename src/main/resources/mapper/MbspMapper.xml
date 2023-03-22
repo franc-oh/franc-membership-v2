@@ -11,4 +11,58 @@
         WHERE A.MBSP_ID = #{mbspId}
     </select>
 
+
+    <sql id="fromFindMbspAndMyMbsp">
+        FROM TB_MBSP A
+        LEFT OUTER JOIN TB_MY_MBSP B
+        ON B.MBSP_ID = A.MBSP_ID
+        AND B.ACNT_ID = #{acntId}
+        AND B.STATUS = '1'
+    </sql>
+
+
+    <select id="findAllAndMyMbspYn" parameterType="java.util.Map" resultType="MbspAndMyMbspVo">
+        /** MbspMapper.findAllAndMyMbspYn */
+        SELECT A.*
+              ,DECODE(B.ACNT_ID, NULL, 'N', 'Y') AS MY_MBSP_YN
+        <include refid="fromFindMbspAndMyMbsp" />
+        WHERE 1=1
+            AND A.STATUS = '1'
+        ORDER BY A.MBSP_ID
+        LIMIT NVL(#{offset}, 0), NVL(#{limit}, 20)
+    </select>
+
+
+
+    <resultMap id="MbspAndMyMbspMap" type="MbspAndMyMbspVo">
+        <id property="mbspId" column="MBSP_ID" />
+        <result property="mbspNm" column="MBSP_NM"/>
+        <result property="status" column="STATUS" />
+        <result property="mbspInfo" column="MBSP_INFO" />
+        <result property="mbspImgUrl" column="MBSP_IMG_URL" />
+        <result property="homepageUrl" column="HOMEPAGE_URL" />
+        <result property="activeMonths" column="ACTIVE_MONTHS" />
+        <result property="bigo" column="BIGO" />
+        <association property="myMbspInfo" column="MBSP_ID" select="MyMbspMap" />
+    </resultMap>
+
+    <resultMap id="MyMbspMap" type="com.franc.vo.MbspAndMyMbspVo$MyMbspInfo">
+        <id property="acntId" column="ACNT_ID" />
+        <id property="mbspId" column="MBSP_ID" />
+        <result property="status" column="STATUS" />
+        <result property="totalAccumPoint" column="TOTAL_ACCUM_POINT" />
+        <result property="mbspGrdCd" column="MBSP_GRD_CD" />
+        <result property="withdrawalDate" column="WITHDRAWAL_DATE" />
+        <result property="barCd" column="BAR_CD" />
+    </resultMap>
+
+    <select id="findByIdAndMyMbspInfo" parameterType="java.util.Map" resultMap="MbspAndMyMbspMap">
+        /** MbspMapper.findByIdAndMyMbspInfo */
+        SELECT A.*, B.*
+        <include refid="fromFindMbspAndMyMbsp" />
+        WHERE 1=1
+        AND A.MBSP_ID = #{mbspId}
+        AND A.STATUS = '1'
+    </select>
+
 </mapper>
