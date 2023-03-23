@@ -94,7 +94,6 @@ public class MyMbspMapperTests {
 
     @Test
     @DisplayName("바코드시퀀스생성")
-    @Transactional
     public void test_getBarCdSeq() throws Exception {
         // #1. Given
 

@@ -6,4 +6,7 @@ public class Code {
 
     public static final int MEMBERSHIP_ACTIVE_MONTHS = 3;
 
+    public static final int DEFAULT_PAGE_NO = 1;
+    public static final int DEFAULT_PAGE_LIMIT = 20;
+
 }

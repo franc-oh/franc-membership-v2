@@ -10,10 +10,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class MbspAndMyMbspVo extends MyMbspVO {
+public class MbspAndMyMbspVo extends MbspVO {
 
     private String myMbspYn;
-
     private MyMbspInfo myMbspInfo;
 
 
@@ -24,6 +23,8 @@ public class MbspAndMyMbspVo extends MyMbspVO {
     @AllArgsConstructor
     @SuperBuilder
     public static class MyMbspInfo extends MyMbspVO {
+
+
         private String statusNm;
 
         public void setStatusNm() {

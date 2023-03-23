@@ -43,22 +43,23 @@
         <result property="homepageUrl" column="HOMEPAGE_URL" />
         <result property="activeMonths" column="ACTIVE_MONTHS" />
         <result property="bigo" column="BIGO" />
-        <association property="myMbspInfo" column="MBSP_ID" select="MyMbspMap" />
-    </resultMap>
-
-    <resultMap id="MyMbspMap" type="com.franc.vo.MbspAndMyMbspVo$MyMbspInfo">
-        <id property="acntId" column="ACNT_ID" />
-        <id property="mbspId" column="MBSP_ID" />
-        <result property="status" column="STATUS" />
-        <result property="totalAccumPoint" column="TOTAL_ACCUM_POINT" />
-        <result property="mbspGrdCd" column="MBSP_GRD_CD" />
-        <result property="withdrawalDate" column="WITHDRAWAL_DATE" />
-        <result property="barCd" column="BAR_CD" />
+        <association property="myMbspInfo" javaType="com.franc.vo.MbspAndMyMbspVo$MyMbspInfo" >
+            <id property="acntId" column="ACNT_ID" />
+            <id property="mbspId" column="MY_MBSP_ID" />
+            <result property="status" column="MY_STATUS" />
+            <result property="totalAccumPoint" column="TOTAL_ACCUM_POINT" />
+            <result property="mbspGrdCd" column="MBSP_GRD_CD" />
+            <result property="withdrawalDate" column="WITHDRAWAL_DATE" />
+            <result property="barCd" column="BAR_CD" />
+        </association>
     </resultMap>
 
     <select id="findByIdAndMyMbspInfo" parameterType="java.util.Map" resultMap="MbspAndMyMbspMap">
         /** MbspMapper.findByIdAndMyMbspInfo */
-        SELECT A.*, B.*
+        SELECT A.*
+             , B.*
+             , B.STATUS AS MY_STATUS
+             , B.MBSP_ID AS MY_MBSP_ID
         <include refid="fromFindMbspAndMyMbsp" />
         WHERE 1=1
         AND A.MBSP_ID = #{mbspId}
