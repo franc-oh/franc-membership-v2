@@ -1,6 +1,7 @@
 package com.franc.mapper;
 
 import com.franc.code.Status;
+import com.franc.vo.MyMbspDetailInfoVo;
 import com.franc.vo.MyMbspVO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,7 @@ public class MyMbspMapperTests {
     private static final Long ACNT_ID = 5L;
     private static final String MBSP_ID = "M230227000001";
     private static final String BAR_CD = "1234567";
+    private static final String FRCH_ID = "F230228000003";
 
 
 
@@ -143,7 +145,10 @@ public class MyMbspMapperTests {
         myMbspMapper.save(vo);
 
         // #2. When
-        MyMbspVO resultVO = myMbspMapper.findByBarCd(BAR_CD);
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("barCd", BAR_CD);
+        paramMap.put("frchId", FRCH_ID);
+        MyMbspDetailInfoVo resultVO = myMbspMapper.findDetailByBarCdAndFrchId(paramMap);
 
         // #.3 Then
         assertThat(resultVO).isNotNull();

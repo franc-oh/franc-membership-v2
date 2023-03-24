@@ -53,8 +53,8 @@
         AND A.MBSP_ID = #{mbspId}
     </select>
 
-    <select id="findByBarCd" parameterType="String" resultType="MyMbspVO">
-        /** MyMbspMapper.findByBarCd */
+    <select id="findDetailByBarCdAndFrchId" parameterType="java.util.Map" resultType="MyMbspDetailInfoVo">
+        /** MyMbspMapper.findDetailByBarCdAndFrchId */
         SELECT A.*
         FROM TB_MY_MBSP A
         WHERE A.BAR_CD = #{barCd}
