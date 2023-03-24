@@ -3,11 +3,12 @@ package com.franc.controller;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.franc.code.Code;
+import com.franc.code.Status;
 import com.franc.dto.MbspFindAllDTO;
+import com.franc.dto.MbspFindByIdDTO;
 import com.franc.exception.ControllerExceptionHandler;
 import com.franc.exception.ExceptionResult;
 import com.franc.mapper.MyMbspMapper;
-import com.franc.service.MyMbspService;
 import com.franc.vo.MyMbspVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,8 +27,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -96,6 +95,30 @@ public class MbspControllerTests {
     }
 
     @Test
+    @DisplayName("멤버십리스트조회_실패_사용자검증실패")
+    @Transactional
+    public void test_findAll_fail_acnt_error() throws Exception {
+        // #1. Given
+        String url = URL + "/all";
+        MbspFindAllDTO.Request requestDTO = MbspFindAllDTO.Request.builder()
+                .acntId(3L)
+                .build();
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(url)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(requestDTO))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("resultCode").value(ExceptionResult.NOT_ACTIVE_ACNT.getCode().value()))
+                .andExpect(jsonPath("resultMessage").value(ExceptionResult.NOT_ACTIVE_ACNT.getMessage()));
+    }
+
+    @Test
     @DisplayName("멤버십리스트조회_성공_회원ID_NULL_모든멤버십_가입여부N으로_조회되야함")
     @Transactional
     public void test_findAll_success_acntId_null() throws Exception {
@@ -152,5 +175,141 @@ public class MbspControllerTests {
                 .andExpect(jsonPath("$.mbspList[0].myMbspYn", is("Y")));
     }
 
+
+    @Test
+    @DisplayName("멤버십상세조회_실패_유효성검증실패")
+    @Transactional
+    public void test_findById_fail_not_valid() throws Exception {
+        // #1. Given
+        MbspFindByIdDTO.Request requestDTO = MbspFindByIdDTO.Request.builder()
+                .acntId(0L)
+                .build();
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(requestDTO))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("resultCode").value(ExceptionResult.PARAMETER_NOT_VALID.getCode().value()))
+                .andExpect(jsonPath("resultMessage").value(ExceptionResult.PARAMETER_NOT_VALID.getMessage()));
+    }
+
+
+    @Test
+    @DisplayName("멤버십상세조회_실패_사용자검증실패")
+    @Transactional
+    public void test_findById_fail_acnt_error() throws Exception {
+        // #1. Given
+        MbspFindByIdDTO.Request requestDTO = MbspFindByIdDTO.Request.builder()
+                .acntId(3L)
+                .mbspId(MBSP_ID)
+                .build();
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(requestDTO))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("resultCode").value(ExceptionResult.NOT_ACTIVE_ACNT.getCode().value()))
+                .andExpect(jsonPath("resultMessage").value(ExceptionResult.NOT_ACTIVE_ACNT.getMessage()));
+    }
+
+
+    @Test
+    @DisplayName("멤버십상세조회_실패_검색건없음")
+    @Transactional
+    public void test_findById_fail_null() throws Exception {
+        // #1. Given
+        MbspFindByIdDTO.Request requestDTO = MbspFindByIdDTO.Request.builder()
+                .acntId(ACNT_ID)
+                .mbspId("123")
+                .build();
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(requestDTO))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isBadRequest())
+                .andExpect(jsonPath("resultCode").value(ExceptionResult.NOT_FOUND_MBSP.getCode().value()))
+                .andExpect(jsonPath("resultMessage").value(ExceptionResult.NOT_FOUND_MBSP.getMessage()));
+    }
+
+    @Test
+    @DisplayName("멤버십상세조회_성공_가입여부N")
+    @Transactional
+    public void test_findById_success_no_MyMbsp() throws Exception {
+        // #1. Given
+        MbspFindByIdDTO.Request requestDTO = MbspFindByIdDTO.Request.builder()
+                .acntId(ACNT_ID)
+                .mbspId(MBSP_ID)
+                .build();
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(requestDTO))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("resultCode").value(Code.RESPONSE_CODE_SUCCESS))
+                .andExpect(jsonPath("resultMessage").value(Code.RESPONSE_MESSAGE_SUCCESS))
+                .andExpect(jsonPath("mbspId").value(MBSP_ID))
+                .andExpect(jsonPath("mbspInfo").isNotEmpty())
+                .andExpect(jsonPath("myMbspInfo").isEmpty());
+    }
+
+
+    @Test
+    @DisplayName("멤버십상세조회_성공_가입여부Y")
+    @Transactional
+    public void test_findById_success_exists_MyMbsp() throws Exception {
+        // #1. Given
+        MbspFindByIdDTO.Request requestDTO = MbspFindByIdDTO.Request.builder()
+                .acntId(ACNT_ID)
+                .mbspId(MBSP_ID)
+                .build();
+
+        myMbspMapper.save(MyMbspVO.builder()
+                .acntId(ACNT_ID)
+                .mbspId(MBSP_ID)
+                .barCd(BAR_CD)
+                .build());
+
+        // #2. When
+        ResultActions resultActions = mockMvc.perform(
+                MockMvcRequestBuilders.get(URL)
+                        .contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .accept(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+                        .content(objectMapper.writeValueAsString(requestDTO))
+        ).andDo(print());
+
+        // #3. Then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("resultCode").value(Code.RESPONSE_CODE_SUCCESS))
+                .andExpect(jsonPath("resultMessage").value(Code.RESPONSE_MESSAGE_SUCCESS))
+                .andExpect(jsonPath("mbspId").value(MBSP_ID))
+                .andExpect(jsonPath("mbspInfo").isNotEmpty())
+                .andExpect(jsonPath("myMbspInfo").isNotEmpty())
+                .andExpect(jsonPath("$.myMbspInfo.statusNm").value(Status.USE.getName()))
+                .andExpect(jsonPath("$.myMbspInfo.barCd").value(BAR_CD));
+    }
 
 }

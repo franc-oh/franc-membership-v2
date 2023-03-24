@@ -20,18 +20,8 @@ public class MbspAndMyMbspVo extends MbspVO {
     @Setter
     @ToString(callSuper = true)
     @NoArgsConstructor
-    @AllArgsConstructor
     @SuperBuilder
     public static class MyMbspInfo extends MyMbspVO {
 
-
-        private String statusNm;
-
-        public void setStatusNm() {
-            Character status = this.getStatus();
-            if(status != null) {
-                this.statusNm = Status.of(status).getName();
-            }
-        }
     }
 }

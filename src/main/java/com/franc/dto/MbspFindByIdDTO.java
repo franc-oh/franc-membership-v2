@@ -1,12 +1,11 @@
 package com.franc.dto;
 
-import com.franc.code.Code;
 import lombok.*;
 
 import javax.validation.constraints.Min;
-import java.util.List;
+import javax.validation.constraints.NotNull;
 
-public class MbspFindAllDTO {
+public class MbspFindByIdDTO {
 
     @Getter
     @Builder
@@ -16,13 +15,9 @@ public class MbspFindAllDTO {
     public static class Request {
         @Min(1)
         private Long acntId;
-        @Min(1)
-        @Builder.Default
-        private Integer pageNo = Code.DEFAULT_PAGE_NO;
-        @Min(1)
-        @Builder.Default
-        private Integer pageLimit = Code.DEFAULT_PAGE_LIMIT;
 
+        @NotNull
+        private String mbspId;
 
     }
 
@@ -37,9 +32,14 @@ public class MbspFindAllDTO {
         private String resultCode;
         private String resultMessage;
 
-        private Integer mbspCnt;
+        private String mbspId;
+        private String mbspNm;
+        private String mbspInfo;
+        private String mbspImgUrl;
+        private String homepageUrl;
 
-        private List<MbspInfo> mbspList;
+        private MyMbspInfo myMbspInfo;
+
     }
 
     @Getter
@@ -48,13 +48,12 @@ public class MbspFindAllDTO {
     @AllArgsConstructor
     @Builder
     @ToString
-    public static class MbspInfo {
+    public static class MyMbspInfo {
 
-        private String mbspId;
-        private String mbspNm;
-        private String mbspInfo;
-        private String mbspImgUrl;
-        private String myMbspYn;
+        private String statusNm;
+        private String mbspGrdCd;
+        private Integer totalAccumPoint;
+        private String barCd;
 
     }
 }

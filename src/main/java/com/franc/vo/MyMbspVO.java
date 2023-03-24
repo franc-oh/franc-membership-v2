@@ -34,6 +34,18 @@ public class MyMbspVO {
     private String barCd;
 
 
+    // 조회용
+    private String statusNm;
+
+
+
+
+    public void setStatus(Character status) {
+        this.status = status;
+        this.statusNm = Status.of(status).getName();
+    }
+
+
     /** 바코드 셋팅 */
     public void setBarCd(String barCd) {
         this.barCd = barCd;

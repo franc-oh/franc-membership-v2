@@ -3,6 +3,10 @@ package com.franc.code;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Getter
 @RequiredArgsConstructor
 public enum MbspGrd {
@@ -16,8 +20,16 @@ public enum MbspGrd {
     private final String code;
     private final String name;
 
+
+    public String code() {
+        return code;
+    }
+
+    public static final Map<String, MbspGrd> CACHED_MBSP_GRD =
+            Stream.of(values()).collect(Collectors.toMap(MbspGrd::code, e -> e));
+
     public static MbspGrd of(final String code) {
-        return MbspGrd.of(code);
+        return CACHED_MBSP_GRD.get(code);
     }
 
 
