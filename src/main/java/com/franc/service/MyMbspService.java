@@ -29,7 +29,7 @@ public class MyMbspService {
 
     /**
      * 멤버십 가입
-     * @param paramMap
+     * @param paramMap  {acntId, mbspId}
      * @throws Exception
      */
     public void join(Map<String, Object> paramMap) throws Exception {
@@ -38,8 +38,10 @@ public class MyMbspService {
         logger.info("MyMbsp join Start : " + paramMap.toString());
 
         // #1-1. 필수 값 체크
-        if(paramMap.isEmpty())
+        if(paramMap.isEmpty() || !paramMap.containsKey("acntId")
+                                || !paramMap.containsKey("mbspId")) {
             throw new BizException(ExceptionResult.PARAMETER_NOT_VALID);
+        }
 
         Long acntId = (Long) paramMap.get("acntId");
         String mbspId = (String) paramMap.get("mbspId");
@@ -90,15 +92,17 @@ public class MyMbspService {
 
     /**
      * 멤버십 탈퇴
-     * @param paramMap
+     * @param paramMap {acntId, mbspId}
      * @throws Exception
      */
     public void withdrawal(Map<String, Object> paramMap) throws Exception {
         logger.info("MyMbsp withdrawal Start : " + paramMap.toString());
 
         // #1. 필수 값 체크
-        if(paramMap.isEmpty())
+        if(paramMap.isEmpty() || !paramMap.containsKey("acntId")
+                || !paramMap.containsKey("mbspId")) {
             throw new BizException(ExceptionResult.PARAMETER_NOT_VALID);
+        }
 
         Long acntId = (Long) paramMap.get("acntId");
         String mbspId = (String) paramMap.get("mbspId");
@@ -146,4 +150,7 @@ public class MyMbspService {
     }
 
 
+    public MyMbspVO findByBarCd(String barCd) throws Exception {
+        return myMbspMapper.findByBarCd(barCd);
+    }
 }

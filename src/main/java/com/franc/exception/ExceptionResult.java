@@ -17,6 +17,7 @@ public enum ExceptionResult {
     REJOIN_NOT_YET(HttpStatus.BAD_REQUEST, "탈퇴 당일은 재가입이 불가합니다."),
     NOT_JOIN_MBSP(HttpStatus.BAD_REQUEST, "멤버십 가입이력이 없습니다."),
     ALREADY_WITHDRAWAL_MBSP(HttpStatus.BAD_REQUEST, "이미 탈퇴한 멤버십입니다."),
+    NOT_FOUND_MBSP_TO_BARCODE(HttpStatus.BAD_REQUEST, "해당 바코드로 가입한 내역이 없습니다."),
 
 
 

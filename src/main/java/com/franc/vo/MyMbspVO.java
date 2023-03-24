@@ -36,6 +36,7 @@ public class MyMbspVO {
 
     // 조회용
     private String statusNm;
+    private String mbspGrdNm;
 
 
 
@@ -43,6 +44,11 @@ public class MyMbspVO {
     public void setStatus(Character status) {
         this.status = status;
         this.statusNm = Status.of(status).getName();
+    }
+
+    public void setMbspGrdCd(String mbspGrdCd) {
+        this.mbspGrdCd = mbspGrdCd;
+        this.mbspGrdNm = MbspGrd.of(mbspGrdCd).getName();
     }
 
 
@@ -56,7 +62,7 @@ public class MyMbspVO {
         boolean result = false;
         if(this.acntId != null && StringUtils.hasText(this.mbspId)) {
             this.withdrawalDate = null;
-            this.status = Status.USE.getCode();
+            this.setStatus(Status.USE.getCode());
             result = true;
         }
 
@@ -68,7 +74,7 @@ public class MyMbspVO {
         boolean result = false;
         if(this.acntId != null && StringUtils.hasText(this.mbspId)) {
             this.withdrawalDate = LocalDateTime.now();
-            this.status = Status.WITHDRAWAL.getCode();
+            this.setStatus(Status.USE.getCode());
             result = true;
         }
 

@@ -2,6 +2,7 @@ package com.franc.mapper;
 
 import com.franc.vo.MyMbspVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
 
@@ -20,5 +21,7 @@ public interface MyMbspMapper {
     void modify(MyMbspVO vo) throws Exception;
 
     Integer getBarCdSeq() throws Exception;
+
+    MyMbspVO findByBarCd(@Param("barCd") String barCd) throws Exception;
 
 }

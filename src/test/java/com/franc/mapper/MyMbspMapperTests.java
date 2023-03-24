@@ -134,6 +134,23 @@ public class MyMbspMapperTests {
 
     }
 
+    @Test
+    @DisplayName("바코드로멤버십상세정보찾기")
+    @Transactional
+    public void findDetailByBarCdAndFrchId() throws Exception {
+        // #1. Given
+        MyMbspVO vo = buildVo(new HashMap<>());
+        myMbspMapper.save(vo);
+
+        // #2. When
+        MyMbspVO resultVO = myMbspMapper.findByBarCd(BAR_CD);
+
+        // #.3 Then
+        assertThat(resultVO).isNotNull();
+        assertThat(resultVO.getAcntId()).isEqualTo(ACNT_ID);
+        assertThat(resultVO.getMbspId()).isEqualTo(MBSP_ID);
+    }
+
 
     public MyMbspVO buildVo(Map<String, Object> paramMap) throws Exception {
         Long acntId = ACNT_ID;

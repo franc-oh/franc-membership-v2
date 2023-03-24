@@ -1,6 +1,7 @@
 package com.franc.vo;
 
 import com.franc.code.AcntGrd;
+import com.franc.code.MbspGrd;
 import com.franc.code.Status;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -30,4 +31,25 @@ public class AcntVO {
     private String insertUser;
     private LocalDateTime updateDate;
     private String updateUser;
+
+
+
+    // 조회용
+    private String statusNm;
+    private String acntGrdNm;
+
+
+
+
+    public void setStatus(Character status) {
+        this.status = status;
+        this.statusNm = Status.of(status).getName();
+    }
+
+    public void setAcntGrd(String acntGrd) {
+        this.acntGrd = acntGrd;
+        this.acntGrdNm = AcntGrd.of(acntGrd).getName();
+    }
+
+
 }

@@ -33,4 +33,15 @@ public class MbspVO {
     private LocalDateTime updateDate;
     private String updateUser;
 
+
+
+    // 조회용
+    private String statusNm;
+
+
+    public void setStatus(Character status) {
+        this.status = status;
+        this.statusNm = Status.of(status).getName();
+    }
+
 }

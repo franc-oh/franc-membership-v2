@@ -55,5 +55,10 @@ public class DateUtil {
         return localDate.format((DateTimeFormatter.ofPattern("yyyyMMdd")));
     }
 
+    public static String getNow() {
+        LocalDate localDate = LocalDate.now();
+        return localDate.format((DateTimeFormatter.ofPattern("yyyyMMdd")));
+    }
+
 
 }

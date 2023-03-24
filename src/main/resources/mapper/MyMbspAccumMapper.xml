@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.franc.mapper.MyMbspAccumMapper">
+
+
+    <insert id="save" parameterType="MyMbspAccumVO">
+        /** MyMbspAccumMapper.save */
+        INSERT INTO TB_MY_MBSP_ACCUM
+        VALUES (
+            #{cancelBarCd},
+            #{status},
+            #{acntId},
+            #{mbspId},
+            #{frchId},
+            #{tradeAmt},
+            #{mbspGrdCd},
+            #{accumRat},
+            #{accumPoint},
+            #{expireYmd},
+            NOW(),
+            NULL
+        )
+    </insert>
+
+    <update id="modify" parameterType="MyMbspAccumVO">
+        /** MyMbspAccumMapper.modify */
+        UPDATE TB_MY_MBSP_ACCUM
+        SET STATUS = #{status}
+        <if test='accumCancelDate != null'>
+            , ACCUM_CANCEL_DATE = #{accumCancelDate}
+        </if>
+        WHERE CANCEL_BAR_CD = #{cancelBarCd}
+
+    </update>
+
+    <select id="findById" parameterType="String" resultType="MyMbspAccumVO">
+        /** MyMbspAccumMapper.findById */
+        SELECT A.*
+        FROM TB_MY_MBSP_ACCUM A
+        WHERE A.CANCEL_BAR_CD = #{cancelBarCd}
+    </select>
+
+</mapper>
