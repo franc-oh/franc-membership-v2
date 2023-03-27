@@ -1,5 +1,6 @@
 package com.franc.mapper;
 
+import com.franc.code.MbspGrd;
 import com.franc.code.Status;
 import com.franc.vo.MyMbspDetailInfoVo;
 import com.franc.vo.MyMbspVO;
@@ -154,6 +155,14 @@ public class MyMbspMapperTests {
         assertThat(resultVO).isNotNull();
         assertThat(resultVO.getAcntId()).isEqualTo(ACNT_ID);
         assertThat(resultVO.getMbspId()).isEqualTo(MBSP_ID);
+        assertThat(resultVO.getMbspInfo()).isNotNull();
+        assertThat(resultVO.getMbspInfo().getMbspId()).isEqualTo(MBSP_ID);
+        assertThat(resultVO.getMbspInfo().getStatusNm()).isEqualTo(Status.USE.getName());
+        assertThat(resultVO.getFrchInfo()).isNotNull();
+        assertThat(resultVO.getFrchInfo().getFrchId()).isEqualTo(FRCH_ID);
+        assertThat(resultVO.getFrchInfo().getStatusNm()).isEqualTo(Status.USE.getName());
+        assertThat(resultVO.getMbspGrdInfo()).isNotNull();
+        assertThat(resultVO.getMbspGrdInfo().getMbspGrdNm()).isEqualTo(MbspGrd.COMMON.getName());
     }
 
 

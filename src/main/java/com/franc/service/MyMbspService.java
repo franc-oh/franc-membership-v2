@@ -6,6 +6,7 @@ import com.franc.exception.BizException;
 import com.franc.exception.ExceptionResult;
 import com.franc.mapper.MyMbspMapper;
 import com.franc.util.DateUtil;
+import com.franc.vo.MyMbspDetailInfoVo;
 import com.franc.vo.MyMbspVO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -150,7 +151,12 @@ public class MyMbspService {
     }
 
 
-    public MyMbspVO findByBarCd(String barCd) throws Exception {
-        return myMbspMapper.findByBarCd(barCd);
+    /**
+     * @param paramMap {barCd, frchId}
+     * @return
+     * @throws Exception
+     */
+    public MyMbspDetailInfoVo findDetailByBarCdAndFrchId(Map<String, Object> paramMap) throws Exception {
+        return myMbspMapper.findDetailByBarCdAndFrchId(paramMap);
     }
 }

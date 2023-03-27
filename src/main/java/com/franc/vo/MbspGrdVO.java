@@ -1,5 +1,6 @@
 package com.franc.vo;
 
+import com.franc.code.MbspGrd;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -24,5 +25,17 @@ public class MbspGrdVO {
     private LocalDateTime updateDate;
     private String updateUser;
 
+
+    // 조회용
+    private String mbspGrdNm;
+
+
+
+
+
+    public void setMbspGrdCd(String mbspGrdCd) {
+        this.mbspGrdCd = mbspGrdCd;
+        this.mbspGrdNm = MbspGrd.of(mbspGrdCd).getName();
+    }
 
 }

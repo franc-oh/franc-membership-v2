@@ -10,10 +10,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 public class MyMbspDetailInfoVo extends MyMbspVO {
-    private MbspFrchVO frchInfo;
-
     private MbspVO mbspInfo;
-
+    private MbspFrchVO frchInfo;
     private MbspGrdVO mbspGrdInfo;
 
 }

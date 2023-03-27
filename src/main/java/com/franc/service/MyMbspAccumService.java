@@ -5,9 +5,11 @@ import com.franc.code.Status;
 import com.franc.exception.BizException;
 import com.franc.exception.ExceptionResult;
 import com.franc.mapper.MyMbspAccumMapper;
-import com.franc.mapper.MyMbspMapper;
 import com.franc.util.DateUtil;
+import com.franc.util.NumberUtil;
+import com.franc.vo.AcntVO;
 import com.franc.vo.MyMbspAccumVO;
+import com.franc.vo.MyMbspDetailInfoVo;
 import com.franc.vo.MyMbspVO;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -58,24 +61,30 @@ public class MyMbspAccumService {
             throw new BizException(ExceptionResult.PARAMETER_NOT_VALID);
         }
 
-        // #2. 바코드로 멤버십 가져오기
-        MyMbspVO mbspToBarCdVo = myMbspService.findByBarCd(barCd);
-        if(mbspToBarCdVo == null) {
+        // #2. 바코드로 멤버십 상세정보 가져오기
+        Map<String, Object> myMbspDetailInfoParam = new HashMap<>();
+        myMbspDetailInfoParam.put("barCd", barCd);
+        MyMbspDetailInfoVo myMbspDetailInfo = myMbspService.findDetailByBarCdAndFrchId(myMbspDetailInfoParam);
+        if(myMbspDetailInfo == null) {
             throw new BizException(ExceptionResult.NOT_FOUND_MBSP_TO_BARCODE);
         }
 
-        Long acntId = mbspToBarCdVo.getAcntId();
-        String mbspId = mbspToBarCdVo.getMbspId();
+        Long acntId = myMbspDetailInfo.getAcntId();
+        String mbspId = myMbspDetailInfo.getMbspId();
+        String mbspGrdCd = myMbspDetailInfo.getMbspGrdCd();
+        int accumRat = myMbspDetailInfo.getMbspGrdInfo().getAccumRat();
+        int activeMonths = myMbspDetailInfo.getMbspInfo().getActiveMonths();
 
         // #2-1. 멤버십상태 체크
-        if(mbspToBarCdVo.getStatus() != Status.USE.getCode()) {
+        if(myMbspDetailInfo.getMbspInfo().getStatus() != Status.USE.getCode()) {
             throw new BizException(ExceptionResult.NOT_ACTIVE_MBSP);
+        } else if(myMbspDetailInfo.getFrchInfo().getStatus() != Status.USE.getCode()) {
+            throw new BizException(ExceptionResult.NOT_ACTIVE_FRANCHISEE);
         }
-/*
+
         // #2-2. 회원상태 체크
         acntService.findByIdAndCheckActive(acntId);
 
-        // #2-3. 멤버십 등급정보 가져오기
 
         // #3. 적립내역 저장
         cancelBarCd = myMbspService.createBarCd();
@@ -85,19 +94,17 @@ public class MyMbspAccumService {
                 .mbspId(mbspId)
                 .frchId(frchId)
                 .tradeAmt(tradeAmt)
-                .mbspGrdCd(mbspToBarCdVo.getMbspGrdCd())
-                .accumRat(null)
-                .accumPoint(null)
-                .expireYmd(null)
+                .mbspGrdCd(mbspGrdCd)
+                .accumRat(accumRat)
+                .accumPoint(NumberUtil.getCalcPerAmt(tradeAmt, accumRat))
+                .expireYmd(DateUtil.getAddMonth(activeMonths))
                 .build();
 
         myMbspAccumMapper.save(myMbspAccumVO);
-*/
+
 
 
         return cancelBarCd;
     }
-
-
 
 }

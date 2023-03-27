@@ -53,10 +53,65 @@
         AND A.MBSP_ID = #{mbspId}
     </select>
 
-    <select id="findDetailByBarCdAndFrchId" parameterType="java.util.Map" resultType="MyMbspDetailInfoVo">
+
+
+    <resultMap id="MyMbspDetailInfoMap" type="MyMbspDetailInfoVo">
+        <id property="acntId" column="ACNT_ID" />
+        <id property="mbspId" column="MBSP_ID" />
+        <result property="status" column="STATUS" />
+        <result property="totalAccumPoint" column="TOTAL_ACCUM_POINT" />
+        <result property="mbspGrdCd" column="MBSP_GRD_CD" />
+        <result property="withdrawalDate" column="WITHDRAWAL_DATE" />
+        <result property="barCd" column="BAR_CD" />
+        <association property="mbspInfo" javaType="MbspVO" >
+            <id property="mbspId" column="M_MBSP_ID" />
+            <result property="mbspNm" column="MBSP_NM"/>
+            <result property="status" column="M_STATUS" />
+            <result property="mbspInfo" column="MBSP_INFO" />
+            <result property="mbspImgUrl" column="MBSP_IMG_URL" />
+            <result property="homepageUrl" column="HOMEPAGE_URL" />
+            <result property="activeMonths" column="ACTIVE_MONTHS" />
+            <result property="bigo" column="BIGO" />
+        </association>
+        <association property="frchInfo" javaType="MbspFrchVO" >
+            <id property="mbspId" column="F_MBSP_ID" />
+            <id property="frchId" column="F_FRCH_ID" />
+            <result property="frchNm" column="FRCH_NM"/>
+            <result property="status" column="F_STATUS" />
+            <result property="zipCd" column="ZIP_CD" />
+            <result property="addr1" column="ADDR1" />
+            <result property="addr2" column="ADDR2" />
+            <result property="telNo" column="TEL_NO" />
+            <result property="bigo" column="BIGO" />
+        </association>
+        <association property="mbspGrdInfo" javaType="MbspGrdVO" >
+            <id property="mbspId" column="G_MBSP_ID" />
+            <id property="mbspGrdCd" column="G_MBSP_GRD_CD" />
+            <result property="grdUpPointFr" column="GRD_UP_POINT_FR"/>
+            <result property="grdUpPointTo" column="GRD_UP_POINT_TO" />
+            <result property="accumRat" column="ACCUM_RAT" />
+            <result property="discRat" column="DISC_RAT" />
+        </association>
+    </resultMap>
+    <select id="findDetailByBarCdAndFrchId" parameterType="java.util.Map" resultMap="MyMbspDetailInfoMap">
         /** MyMbspMapper.findDetailByBarCdAndFrchId */
         SELECT A.*
+              ,B.*
+              ,C.*
+              ,D.*
+              ,B.MBSP_ID AS M_MBSP_ID
+              ,B.STATUS AS M_STATUS
+              ,C.MBSP_ID AS F_MBSP_ID
+              ,C.FRCH_ID AS F_FRCH_ID
+              ,C.STATUS AS F_STATUS
+              ,D.MBSP_ID AS G_MBSP_ID
+              ,D.MBSP_GRD_CD AS G_MBSP_GRD_CD
         FROM TB_MY_MBSP A
+        JOIN TB_MBSP B ON B.MBSP_ID = A.MBSP_ID
+        JOIN TB_MBSP_FRCH C ON C.MBSP_ID = A.MBSP_ID
+            AND C.FRCH_ID = #{frchId}
+        JOIN TB_MBSP_GRD D ON D.MBSP_ID = A.MBSP_ID
+            AND D.MBSP_GRD_CD = A.MBSP_GRD_CD
         WHERE A.BAR_CD = #{barCd}
     </select>
 
